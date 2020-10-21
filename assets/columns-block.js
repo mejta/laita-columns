@@ -26,9 +26,6 @@
     icon: 'format-aside',
     edit: EditColumns,
     save: () => e(InnerBlocks.Content),
-    providesContext: {
-      'laita/columns': 'columns',
-    },
     supports: {
       anchor: true,
       align: ['full'],
