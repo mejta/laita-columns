@@ -140,7 +140,7 @@ function render_columns($attributes = [], $inner_blocks = null)
 {
     ob_start();
     ?>
-    <div class="<?php echo join(' ', ['laita-columns', 'laita-columns--' . $attributes['columns'], $attributes['className']]); ?>">
+    <div class="<?php echo join(' ', ['laita-columns', 'laita-columns--' . $attributes['columns'], $attributes['className'] ?? null]); ?>">
         <?php echo $inner_blocks; ?>
     </div>
     <?php
