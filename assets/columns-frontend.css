@@ -1,0 +1,23 @@
+.laita-columns {
+    display: flex;
+}
+
+.laita-column {
+    flex: 1;
+}
+
+.is-style-laita-columns-30-70 .laita-column:nth-child(1) {
+    flex: 0 0 30%;
+}
+
+.is-style-laita-columns-30-70 .laita-column:nth-child(2) {
+    flex: 0 0 70%;
+}
+
+.is-style-laita-columns-70-30 .laita-column:nth-child(1) {
+    flex: 0 0 70%;
+}
+
+.is-style-laita-columns-70-30 .laita-column:nth-child(2) {
+    flex: 0 0 30%;
+}

@@ -1,0 +1,37 @@
+.wp-block-laita-columns .block-editor-block-list__layout {
+    display: flex;
+    margin: -1px;
+}
+
+.wp-block-laita-columns .block-editor-block-list__block {
+    margin: 0;
+    flex: 1;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 1px;
+    padding: 0.5rem 1rem;
+}
+
+.is-style-laita-columns-30-70 .block-editor-block-list__block:nth-child(1) {
+    flex: 0 0 30%;
+}
+
+.is-style-laita-columns-30-70 .block-editor-block-list__block:nth-child(2) {
+    flex: 0 0 70%;
+}
+
+.is-style-laita-columns-70-30 .block-editor-block-list__block:nth-child(1) {
+    flex: 0 0 70%;
+}
+
+.is-style-laita-columns-70-30 .block-editor-block-list__block:nth-child(2) {
+    flex: 0 0 30%;
+}
+
+.wp-block-laita-column .block-editor-block-list__layout {
+    display: block;
+    margin: -1px;
+}
+
+.wp-block-laita-column .block-editor-block-list__block {
+    border: none;
+}

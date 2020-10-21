@@ -1,0 +1,74 @@
+# Copyright (C) 2020 Daniel Mejta
+# This file is distributed under the same license as the Laita Columns block plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Laita Columns block 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/laita-columns-"
+"block\n"
+"POT-Creation-Date: 2020-10-21T14:55:53+00:00\n"
+"PO-Revision-Date: 2020-10-21 16:56+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: cs_CZ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"X-Domain: laita-columns\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+
+#. Plugin Name of the plugin
+msgid "Laita Columns block"
+msgstr "Sloupce od Adama"
+
+#. Author of the plugin
+msgid "Daniel Mejta"
+msgstr "Daniel Mejta"
+
+#. Author URI of the plugin
+msgid "https://www.mejta.net"
+msgstr "https://www.mejta.net"
+
+#: assets/column-block.js:18
+msgid "Custom column"
+msgstr "Přizpůsobený sloupec"
+
+#: assets/column-block.js:19
+msgid "Custom column brought to you by Adam Laita"
+msgstr "Přizpůsobený sloupec od Adama Laity"
+
+#: assets/columns-block.js:23
+msgid "Custom columns"
+msgstr "Přizpůsobené sloupce"
+
+#: assets/columns-block.js:24
+msgid "Custom columns brought to you by Adam Laita"
+msgstr "Přizpůsobené sloupce od Adama Laity"
+
+#: assets/columns-block.js:40
+msgid "Two columns"
+msgstr "Dva sloupce"
+
+#: assets/columns-block.js:41
+msgid "Two custom columns"
+msgstr "Dva přizpůsobené sloupce"
+
+#: assets/columns-block.js:55
+msgid "Three columns"
+msgstr "Tři sloupce"
+
+#: assets/columns-block.js:56
+msgid "Three custom columns"
+msgstr "Tři přizpůsobené sloupce"
+
+#: assets/columns-block.js:73
+msgid "50/50"
+msgstr "50/50"
+
+#: assets/columns-block.js:78
+msgid "30/70"
+msgstr "30/70"
+
+#: assets/columns-block.js:82
+msgid "70/30"
+msgstr "70/30"
