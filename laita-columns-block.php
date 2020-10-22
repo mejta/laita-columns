@@ -17,7 +17,7 @@ add_action('init', __NAMESPACE__ . '\load_translations');
 add_action('init', __NAMESPACE__ . '\register_blocks');
 
 // Render pro core bloky a nahrazení render funkce za vlastní. Pokud chceš použít kontext, musíš využít toto místo render_block.
-add_filter('register_block_type_args', __NAMESPACE__ . '\register_image_render_with_context', 10, 2);
+add_filter('register_block_type_args', __NAMESPACE__ . '\register_render_with_context', 10, 2);
 
 /**
  * Registruje vlastní bloky
@@ -41,9 +41,12 @@ function register_blocks()
             ],
             'args'     => [ // Ostatní argumenty do register_block_type() funkce
                 'attributes'      => [
-                    'columns' => ['type' => 'string'],
+                    'column' => ['type' => 'number'],
                 ],
                 'uses_context' => ['laita/columns'],
+                'provides_context' => [
+                    'laita/column' => 'column', // tady kontext poskytuješ pro podřízené bloky
+                ],
                 'render_callback' => __NAMESPACE__ . '\render_column', // funkce pro render custom bloku
             ],
         ],
@@ -117,13 +120,17 @@ function load_translations()
  * @param $block_name
  * @return mixed
  */
-function register_image_render_with_context($args, $block_name)
+function register_render_with_context($args, $block_name)
 {
+    $args['uses_context'] = array_merge($args['uses_context'] ?? [], [
+        'laita/columns',
+        'laita/column',
+    ]);
+
     if ($block_name === 'core/image') {
         $args['render_callback'] = __NAMESPACE__ . '\render_image';
-        $args['uses_context'] = array_merge($args['uses_context'] ?? [], [
-            'laita/columns',
-        ]);
+    } elseif ($block_name === 'core/gallery') {
+        $args['render_callback'] = __NAMESPACE__ . '\render_gallery';
     }
 
     return $args;
@@ -159,7 +166,7 @@ function render_column($attributes = [], $inner_blocks = null, $block = null)
 {
     ob_start();
     ?>
-    <div class="<?php echo join(' ', ['laita-column', 'laita-column--in-' . $block->context['laita/columns']])?>">
+    <div class="<?php echo join(' ', ['laita-column', 'laita-column--' . $attributes['column'], 'laita-column--in-' . $block->context['laita/columns']])?>">
         <?php echo $inner_blocks; ?>
     </div>
     <?php
@@ -180,6 +187,7 @@ function render_image($attributes = [], $content = null, $block = null)
     <figure class="<?php echo join(' ', [
         $attributes['className'],
         'image-in-columns--' . $block->context['laita/columns'], // tady už můžeš kontext používat
+        'image--column-' . $block->context['laita/column'],
     ]); ?>">
         <?php echo wp_get_attachment_image($attributes['id'], $attributes['sizeSlug'], false, [
             'class' => $attributes['className'],
@@ -188,6 +196,19 @@ function render_image($attributes = [], $content = null, $block = null)
     </figure>
     <?php
     return ob_get_clean();
+}
+
+/**
+ * Vlastní render galerie
+ *
+ * @param array $attributes
+ * @param null $content
+ * @param null $block
+ * @return mixed|null
+ */
+function render_gallery($attributes = [], $content = null, $block = null)
+{
+    return $content;
 }
 
 /**

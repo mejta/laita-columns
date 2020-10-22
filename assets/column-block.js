@@ -7,6 +7,8 @@
   const EditColumn = (props) => {
     const { className } = props;
     
+    console.log(props.attributes);
+    
     // Documentation: https://reactjs.org/docs/react-without-jsx.html
     return e('div', { className }, [
       e(InnerBlocks, { templateLock: false }),

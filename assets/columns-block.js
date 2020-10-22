@@ -7,12 +7,18 @@
   const EditColumns = (props) => {
     const { className, attributes } = props;
     
+    const template = (new Array(attributes.columns))
+      .fill()
+      .map(
+        (column, index) => ['laita/column', { column: index + 1 }]
+      );
+    
     // Documentation: https://reactjs.org/docs/react-without-jsx.html
     return e('div', { className }, [
       e(InnerBlocks, {
         allowedBlocks: ['laita/column'],
         orientation: 'horizontal',
-        template: (new Array(attributes.columns)).fill(['laita/column']),
+        template,
         templateLock: 'all'
       }),
     ]);
@@ -46,8 +52,8 @@
           columns: 2,
         },
         innerBlocks: [
-          ['laita/column', { columns: 2 }],
-          ['laita/column', { columns: 2 }],
+          ['laita/column', { column: 1 }],
+          ['laita/column', { column: 2 }],
         ],
       },
       {
@@ -61,9 +67,9 @@
           columns: 3,
         },
         innerBlocks: [
-          ['laita/column', { columns: 3 }],
-          ['laita/column', { columns: 3 }],
-          ['laita/column', { columns: 3 }],
+          ['laita/column', { column: 1 }],
+          ['laita/column', { column: 2 }],
+          ['laita/column', { column: 3 }],
         ],
       },
     ],
