@@ -135,7 +135,7 @@ function register_render_with_context($args, $block_name)
         'core/gallery'  => ns('render_gallery'),
     ];
 
-    if ($custom_renders[$block_name]) {
+    if (isset($custom_renders[$block_name])) {
         $args['render_callback'] = $custom_renders[$block_name];
     }
 
