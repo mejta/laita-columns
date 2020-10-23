@@ -10,111 +10,106 @@ Domain Path: /languages
 
 namespace Laita;
 
-// Načtení překladů
-add_action('init', __NAMESPACE__ . '\load_translations');
-
-// Registrace custom bloků
-add_action('init', __NAMESPACE__ . '\register_blocks');
-
-// Render pro core bloky a nahrazení render funkce za vlastní. Pokud chceš použít kontext, musíš využít toto místo render_block.
-add_filter('register_block_type_args', __NAMESPACE__ . '\register_render_with_context', 10, 2);
-
 /**
- * Registruje vlastní bloky
+ * Helper: Zjednodušuje volání funkcí v namespace
+ *
+ * @param string $callable
+ * @return string
  */
-function register_blocks()
+function ns(string $callable)
 {
-    $blocks = [
-        'laita/column'  => [
-            'script'   => [// Javascript do block editoru
-                'handle' => 'laita-column-block-script',
-                'deps'   => ['react', 'wp-blocks', 'wp-block-editor', 'wp-i18n'],
-                'path'   => 'assets/column-block.js',
-            ],
-            'style'    => [// Styly pro block editor
-                'handle' => 'laita-column-block-style',
-                'path'   => 'assets/column-block.css',
-            ],
-            'fe_style' => [ // Styly pro frontend
-                'handle' => null,
-                'path'   => null,
-            ],
-            'args'     => [ // Ostatní argumenty do register_block_type() funkce
-                'attributes'      => [
-                    'column' => ['type' => 'number'],
-                ],
-                'uses_context' => ['laita/columns'],
-                'provides_context' => [
-                    'laita/column' => 'column', // tady kontext poskytuješ pro podřízené bloky
-                ],
-                'render_callback' => __NAMESPACE__ . '\render_column', // funkce pro render custom bloku
-            ],
-        ],
-        'laita/columns' => [
-            'script'   => [
-                'handle' => 'laita-columns-block-script',
-                'deps'   => ['react', 'wp-blocks', 'wp-block-editor', 'wp-i18n'],
-                'path'   => 'assets/columns-block.js',
-            ],
-            'style'    => [
-                'handle' => 'laita-columns-block-style',
-                'path'   => 'assets/columns-block.css',
-            ],
-            'fe_style' => [
-                'handle' => 'laita-columns-style',
-                'path'   => 'assets/columns-frontend.css',
-            ],
-            'args'     => [
-                'attributes'      => [
-                    'columns'          => ['type' => 'number'],
-                    'align'            => ['type' => 'string'],
-                ],
-                'render_callback' => __NAMESPACE__ . '\render_columns',
-                'provides_context' => [
-                    'laita/columns' => 'columns', // tady kontext poskytuješ pro podřízené bloky
-                ],
-            ],
-        ],
-    ];
-
-    foreach ($blocks as $name => $block) {
-        // Zaregistrujeme styl pro frontend
-        wp_register_style($block['fe_style']['handle'], plugin_dir_url(__FILE__) . $block['fe_style']['path']);
-
-        // Zaregistrujeme styl pro block editor
-        wp_register_style($block['style']['handle'], plugin_dir_url(__FILE__) . $block['style']['path']);
-
-        // Zaregistrujeme script do block editoru
-        wp_register_script($block['script']['handle'], plugin_dir_url(__FILE__) . $block['script']['path'], $block['script']['deps']);
-
-        // Nastavíme překlady pro blok
-        wp_set_script_translations($block['script']['handle'], 'laita-columns', plugin_dir_path(__FILE__) . 'languages');
-
-        // Zaregistrujeme vlastní block tyle
-        register_block_type(
-            $name,
-            array_merge(
-                [
-                    'editor_script' => $block['script']['handle'],
-                    'editor_style'  => $block['style']['handle'],
-                    'style'         => $block['fe_style']['handle'],
-                ],
-                $block['args']
-            )
-        );
-    }
+    return __NAMESPACE__ . '\\' . $callable;
 }
 
 /**
- * Načítá překlady pro plugin
+ * Registrace custom bloků
  */
-function load_translations()
+add_action('init', ns('register_column_block'));
+add_action('init', ns('register_columns_block'));
+
+/**
+ * Render pro core bloky a nahrazení render funkce za vlastní. Pokud
+ * chceš použít kontext, musíš využít toto místo render_block filteru.
+ */
+add_filter('register_block_type_args', ns('register_render_with_context'), 10, 2);
+
+
+/**
+ * Registruje laita/columns block
+ */
+function register_columns_block()
 {
-    load_plugin_textdomain('laita-columns', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    // Zaregistrujeme styl pro frontend
+    wp_register_style(
+        'laita-columns-frontend',
+        plugin_dir_url(__FILE__) . 'assets/columns-frontend.css'
+    );
+
+    // Zaregistrujeme styl pro block editor
+    wp_register_style(
+        'laita-columns-block-style',
+        plugin_dir_url(__FILE__) . 'assets/columns-block.css'
+    );
+
+    // Zaregistrujeme script do block editoru
+    wp_register_script(
+        'laita-columns-block-script',
+        plugin_dir_url(__FILE__) . 'assets/columns-block.js',
+        ['react', 'wp-blocks', 'wp-block-editor', 'wp-i18n']
+    );
+
+    // Nastavíme překlady pro blok
+    wp_set_script_translations('laita-columns-block-script', 'laita-columns', plugin_dir_path(__FILE__) . 'languages');
+
+    // Zaregistrujeme vlastní block type
+    register_block_type('laita/columns', [
+        'editor_script'    => 'laita-columns-block-script',
+        'editor_style'     => 'laita-columns-block-style',
+        'style'            => 'laita-columns-frontend',
+        'attributes'       => [
+            'columns' => ['type' => 'number'],
+            'align'   => ['type' => 'string'],
+        ],
+        'provides_context' => [
+            'laita/columns' => 'columns', // tady kontext poskytuješ pro podřízené bloky
+        ],
+    ]);
+}
+
+function register_column_block()
+{
+    // Zaregistrujeme styl pro block editor
+    wp_register_style(
+        'laita-column-block-style',
+        plugin_dir_url(__FILE__) . 'assets/column-block.css'
+    );
+
+    // Zaregistrujeme script do block editoru
+    wp_register_script(
+        'laita-column-block-script',
+        plugin_dir_url(__FILE__) . 'assets/column-block.js',
+        ['react', 'wp-blocks', 'wp-block-editor', 'wp-i18n']
+    );
+
+    // Nastavíme překlady pro blok
+    wp_set_script_translations('laita-column-block-script', 'laita-columns', plugin_dir_path(__FILE__) . 'languages');
+
+    // Zaregistrujeme vlastní block type
+    register_block_type('laita/column', [
+        'editor_script'    => 'laita-column-block-script',
+        'editor_style'     => 'laita-column-block-style',
+        'attributes'       => [
+            'column' => ['type' => 'number'],
+        ],
+        'provides_context' => [
+            'laita/column' => 'column', // tady kontext poskytuješ pro podřízené bloky
+        ],
+    ]);
 }
 
 /**
- * Zaregistruje u libovolného bloku kontext, který má odebírat. Můžeš to pak použít ve vlastním renderu
+ * Zaregistruje u libovolného bloku kontext, který má odebírat
+ * a vlastní render funkce, které můžou kontext využívat.
  *
  * @param $args
  * @param $block_name
@@ -122,15 +117,26 @@ function load_translations()
  */
 function register_render_with_context($args, $block_name)
 {
-    $args['uses_context'] = array_merge($args['uses_context'] ?? [], [
+    // všechny bloky budou využívat context
+    if (!isset($args['uses_context'])) {
+        $args['uses_context'] = [];
+    }
+
+    $args['uses_context'] = array_merge($args['uses_context'], [
         'laita/columns',
         'laita/column',
     ]);
 
-    if ($block_name === 'core/image') {
-        $args['render_callback'] = __NAMESPACE__ . '\render_image';
-    } elseif ($block_name === 'core/gallery') {
-        $args['render_callback'] = __NAMESPACE__ . '\render_gallery';
+    // registrujeme vlastní render funkce
+    $custom_renders = [
+        'laita/columns' => ns('render_columns'),
+        'laita/column'  => ns('render_column'),
+        'core/image'    => ns('render_image'),
+        'core/gallery'  => ns('render_gallery'),
+    ];
+
+    if ($custom_renders[$block_name]) {
+        $args['render_callback'] = $custom_renders[$block_name];
     }
 
     return $args;
@@ -166,7 +172,7 @@ function render_column($attributes = [], $inner_blocks = null, $block = null)
 {
     ob_start();
     ?>
-    <div class="<?php echo join(' ', ['laita-column', 'laita-column--' . $attributes['column'], 'laita-column--in-' . $block->context['laita/columns']])?>">
+    <div class="<?php echo join(' ', ['laita-column', 'laita-column--' . $attributes['column'], 'laita-column--in-' . $block->context['laita/columns']]) ?>">
         <?php echo $inner_blocks; ?>
     </div>
     <?php
@@ -185,13 +191,13 @@ function render_image($attributes = [], $content = null, $block = null)
     ob_start();
     ?>
     <figure class="<?php echo join(' ', [
-        $attributes['className'],
+        $attributes['className'] ?? null,
         'image-in-columns--' . $block->context['laita/columns'], // tady už můžeš kontext používat
         'image--column-' . $block->context['laita/column'],
     ]); ?>">
         <?php echo wp_get_attachment_image($attributes['id'], $attributes['sizeSlug'], false, [
-            'class' => $attributes['className'],
-            'alt' => $attributes['alt'],
+            'class' => $attributes['className'] ?? null,
+            'alt'   => $attributes['alt'],
         ]); ?>
     </figure>
     <?php
@@ -209,44 +215,4 @@ function render_image($attributes = [], $content = null, $block = null)
 function render_gallery($attributes = [], $content = null, $block = null)
 {
     return $content;
-}
-
-/**
- * Jednoduchá funkce na dump proměnné
- *
- * @param mixed ...$vars
- */
-function dump()
-{
-$backtrace = debug_backtrace();
-$caller = $backtrace[0];
-?>
-<style>
-.simple-dumper {
-border: 1px solid red;
-background: rgba(0,0,0,0.5);
-color: white;
-font-size: 1rem;
-position: relative;
-}
-.simple-dumper h1 {
-font-size: 1rem;
-padding: 0.25rem 0.5rem;
-margin: 0;
-position: absolute;
-top: -1rem;
-left: 1rem;
-background: red;
-}
-.simple-dumper pre {
-margin: 0;
-padding: 1rem 1rem 0.5rem 1rem;
-}
-</style>
-<div class="simple-dumper">
-<h1><?php echo $caller['file'] . ':' . $caller['line']; ?></h1>
-<pre>
-<?php echo var_export(func_get_args()); ?>
-</pre>
-</div><?php
 }
